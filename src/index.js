@@ -1,7 +1,7 @@
 #!/usr/bin/env node
+import gendiff from 'commander';
 import jsonCompare from './jsonCompare.js'
-
-const gendiff = require('commander');
+// const gendiff = require('commander');
 // const fs = require('fs');
 
 gendiff

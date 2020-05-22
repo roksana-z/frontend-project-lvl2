@@ -1,37 +1,46 @@
 #!/usr/bin/env node
-const fs = require('fs');
+import fs from 'fs';
+import path from 'path';
+import parse from './parse.js';
 
-
-const jsonCompare = (file1, file2) => {
+export default (file1, file2) => {
+  // const entries = fs.readFileSync(file1, 'utf-8');
+  // const inI = ini.parse(entries);
+  // const str = ini.encode(inI);
+  // console.log(str);
   let diff = '';
-  // file
-  const jsonBefore = fs.readFileSync(file1);
-  const jsonAfter = fs.readFileSync(file2);
-  // dict
-  const jsBefore = JSON.parse(jsonBefore);
-  const jsAfter = JSON.parse(jsonAfter);
+  // // file
+  const ext1 = path.extname(path.basename(file1));
+  const ext2 = path.extname(path.basename(file2));
+  if (ext1 !== ext2) {
+    throw new Error('different extensions');
+  }
 
-  const keysAfter = Object.keys(jsAfter);
-  const keysBefore = Object.keys(jsBefore);
+  // dict
+  const parsedBefore = parse(file1);
+  const parsedAfter = parse(file2);
+
+  const keysAfter = Object.keys(parsedAfter);
+  const keysBefore = Object.keys(parsedBefore);
 
   const common = keysAfter.filter((key) => keysBefore.includes(key));
   common.forEach((el) => {
-    if (jsBefore[el] === jsAfter[el]) {
-      diff += `   ${el}: ${jsAfter[el]}\n`;
+    if (parsedBefore[el] === parsedAfter[el]) {
+      diff += `   ${el}: ${parsedAfter[el]}\n`;
     } else {
-      diff += ` + ${el}: ${jsAfter[el]}\n`;
-      diff += ` - ${el}: ${jsBefore[el]}\n`;
+      diff += ` + ${el}: ${parsedAfter[el]}\n`;
+      diff += ` - ${el}: ${parsedBefore[el]}\n`;
     }
   });
   const deleted = keysBefore.filter((key) => !keysAfter.includes(key));
-  deleted.forEach((el) => diff =`${diff} - ${el}: ${jsBefore[el]}\n`);
+  deleted.forEach((el) => diff +=` - ${el}: ${parsedBefore[el]}\n`);
 
   const added = keysAfter.filter((key) => !keysBefore.includes(key));
-  added.forEach((el) => diff = `${diff} + ${el}: ${jsAfter[el]}\n`);
+  added.forEach((el) => diff += ` + ${el}: ${parsedAfter[el]}\n`);
 
   diff = `{\n${diff}}`;
   console.log(diff);
   return diff;
 };
 
-export default jsonCompare;
+// export default jsonCompare;

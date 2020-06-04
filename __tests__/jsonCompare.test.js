@@ -22,26 +22,38 @@ const emptyIni = getFixturePath('empty.ini');
 
 test('simple', () => {
   const result = fs.readFileSync(getFixturePath('treeResult.txt'), 'utf-8');
-  console.log(typeof result)
-  expect(jsonCompare(beforeJSON, afterJSON)).toMatch(result.trim());
-  expect(jsonCompare(beforeYaml, afterYaml)).toMatch(result.trim());
-  expect(jsonCompare(beforeIni, afterIni)).toMatch(result.trim());
+  const resultPlainFormat = fs.readFileSync(getFixturePath('resultPlain.txt'), 'utf-8');
+  const resultJSONFormat = fs.readFileSync(getFixturePath('resultJson.json'), 'utf-8');
+  expect(jsonCompare(beforeJSON, afterJSON, 'tree')).toMatch(result.trim());
+  expect(jsonCompare(beforeYaml, afterYaml, 'tree')).toMatch(result.trim());
+  expect(jsonCompare(beforeIni, afterIni, 'tree')).toMatch(result.trim());
+  expect(jsonCompare(beforeJSON, afterJSON, 'plain')).toMatch(resultPlainFormat.trim());
+  expect(jsonCompare(beforeJSON, afterJSON, 'json')).toMatch(resultJSONFormat.trim());
 });
 
 test('emptyBefore', () => {
   const result = fs.readFileSync(getFixturePath('emptyBeforeResult.txt'), 'utf-8');
-  const resultForIni = fs.readFileSync(getFixturePath('emptyBeforeIni.txt'), 'utf-8')
-  expect(jsonCompare(emptyJSON, afterJSON)).toMatch(result.trim());
-  expect(jsonCompare(emptyYaml, afterYaml)).toMatch(result.trim());
-  expect(jsonCompare(emptyIni, afterIni)).toMatch(resultForIni.trim());
+  const resultForIni = fs.readFileSync(getFixturePath('emptyBeforeIni.txt'), 'utf-8');
+  const resultPlain = fs.readFileSync(getFixturePath('EmptyBeforePlain.txt'), 'utf-8');
+  const resultJson = fs.readFileSync(getFixturePath('emptyBeforeJson.json'), 'utf-8');
+  expect(jsonCompare(emptyJSON, afterJSON, 'tree')).toMatch(result.trim());
+  expect(jsonCompare(emptyYaml, afterYaml, 'tree')).toMatch(result.trim());
+  expect(jsonCompare(emptyIni, afterIni, 'tree')).toMatch(resultForIni.trim());
+  expect(jsonCompare(emptyJSON, afterJSON, 'plain')).toMatch(resultPlain.trim());
+  expect(jsonCompare(emptyJSON, afterJSON, 'json')).toMatch(resultJson.trim());
 });
 
 test('emptyAfter', () => {
   const result = fs.readFileSync(getFixturePath('emptyAfterResult.txt'), 'utf-8');
-  expect(jsonCompare(beforeJSON, emptyJSON)).toMatch(result.trim());
-  expect(jsonCompare(beforeYaml, emptyYaml)).toMatch(result.trim());
-  expect(jsonCompare(beforeIni, emptyIni)).toMatch(result.trim());
+  const resultPlain = fs.readFileSync(getFixturePath('emptyAfterResultPlain.txt'), 'utf-8');
+  const resultJson = fs.readFileSync(getFixturePath('emptyAfterJson.json'), 'utf-8');
+  expect(jsonCompare(beforeJSON, emptyJSON, 'tree')).toMatch(result.trim());
+  expect(jsonCompare(beforeYaml, emptyYaml, 'tree')).toMatch(result.trim());
+  expect(jsonCompare(beforeIni, emptyIni, 'tree')).toMatch(result.trim());
+  expect(jsonCompare(beforeJSON, emptyJSON, 'plain')).toMatch(resultPlain.trim());
+  expect(jsonCompare(beforeJSON, emptyJSON, 'json')).toMatch(resultJson.trim());
 });
+
 
 test('differentExt', () => {
   expect(() => {

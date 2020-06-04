@@ -33,7 +33,7 @@ export default (ast) => {
   const iter = (tree, arr) => {
     tree.forEach((el) => {
       const {
-        key, status, depth, parents, newValue, oldValue,
+        key, status, depth, newValue, oldValue,
       } = el;
 
       if (status === 'bothObjects') {

@@ -1,0 +1,98 @@
+[
+  {
+    "key": "common",
+    "status": "bothObjects",
+    "newvalue": [
+      {
+        "key": "setting1",
+        "status": "unchanged",
+        "newValue": "Value 1"
+      },
+      {
+        "key": "setting2",
+        "status": "deleted",
+        "oldValue": 200
+      },
+      {
+        "key": "setting3",
+        "status": "changed",
+        "oldValue": true,
+        "newValue": {
+          "key": "value"
+        }
+      },
+      {
+        "key": "setting6",
+        "status": "bothObjects",
+        "newvalue": [
+          {
+            "key": "key",
+            "status": "unchanged",
+            "newValue": "value"
+          },
+          {
+            "key": "ops",
+            "status": "added",
+            "newValue": "vops"
+          }
+        ]
+      },
+      {
+        "key": "follow",
+        "status": "added",
+        "newValue": false
+      },
+      {
+        "key": "setting4",
+        "status": "added",
+        "newValue": "blah blah"
+      },
+      {
+        "key": "setting5",
+        "status": "added",
+        "newValue": {
+          "key5": "value5"
+        }
+      }
+    ]
+  },
+  {
+    "key": "group1",
+    "status": "bothObjects",
+    "newvalue": [
+      {
+        "key": "baz",
+        "status": "changed",
+        "oldValue": "bas",
+        "newValue": "bars"
+      },
+      {
+        "key": "foo",
+        "status": "unchanged",
+        "newValue": "bar"
+      },
+      {
+        "key": "nest",
+        "status": "changed",
+        "oldValue": {
+          "key": "value"
+        },
+        "newValue": "str"
+      }
+    ]
+  },
+  {
+    "key": "group2",
+    "status": "deleted",
+    "oldValue": {
+      "abc": 12345
+    }
+  },
+  {
+    "key": "group3",
+    "status": "added",
+    "newValue": {
+      "fee": 100500
+    }
+  }
+]

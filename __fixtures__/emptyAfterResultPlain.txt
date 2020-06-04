@@ -1,0 +1,3 @@
+Property 'common' was deleted
+Property 'group1' was deleted
+Property 'group2' was deleted

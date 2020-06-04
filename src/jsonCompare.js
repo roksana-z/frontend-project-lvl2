@@ -2,7 +2,9 @@
 import path from 'path';
 import _ from 'lodash';
 import parse from './parse.js';
-import formatToTree from './format.js'
+import formatToTree from './formatters/stylish.js';
+import formatToText from './formatters/plain.js';
+import formatToJson from './formatters/json.js';
 
 const makeState = (obj1, obj2, key, depth, parents) => {
   if (typeof obj1[key] === 'object' && typeof obj2[key] === 'object') {
@@ -51,6 +53,10 @@ const applyFormat = (ast, style) => {
   switch (style) {
     case 'tree':
       return formatToTree(ast);
+    case 'plain':
+      return formatToText(ast);
+    case 'json':
+      return formatToJson(ast);
     default:
       break;
   }
@@ -66,6 +72,7 @@ export default (file1, file2, format) => {
   const parsedTreeBefore = parse(file1);
   const parsedTreeAfter = parse(file2);
   const ast = buildAstTree(parsedTreeBefore, parsedTreeAfter);
+  // console.log(ast)
   console.log(applyFormat(ast, format));
   return applyFormat(ast, format);
 };

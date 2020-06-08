@@ -1,15 +1,14 @@
 
 export default (ast) => {
-  const result = ast.map(obj => {
-
+  const result = ast.map((obj) => {
     const iter = (object) => {
       const {
         key, status, newValue, oldValue,
       } = object;
 
       if (Array.isArray(newValue)) {
-        const result2 = newValue.map((el) => iter(el));
-        return { key, status, newvalue: result2 };
+        const arrayResult = newValue.map((el) => iter(el));
+        return { key, status, newValue: arrayResult };
       } if (status === undefined) {
         return { ...object };
       }

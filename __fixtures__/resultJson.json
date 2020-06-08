@@ -2,7 +2,7 @@
   {
     "key": "common",
     "status": "bothObjects",
-    "newvalue": [
+    "newValue": [
       {
         "key": "setting1",
         "status": "unchanged",
@@ -24,7 +24,7 @@
       {
         "key": "setting6",
         "status": "bothObjects",
-        "newvalue": [
+        "newValue": [
           {
             "key": "key",
             "status": "unchanged",
@@ -59,7 +59,7 @@
   {
     "key": "group1",
     "status": "bothObjects",
-    "newvalue": [
+    "newValue": [
       {
         "key": "baz",
         "status": "changed",

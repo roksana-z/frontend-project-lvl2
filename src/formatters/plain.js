@@ -11,35 +11,38 @@ const convertValue = (val) => {
   } return val;
 };
 
-
 export default (ast) => {
   const arr = [];
-  const iter = (ast) => {
-    ast.forEach((el) => {
+  const iter = (tree) => {
+    tree.forEach((el) => {
       const {
-        key, status, depth, parents, newValue, oldValue,
+        key, status, parents, newValue, oldValue,
       } = el;
       const path = makePath(parents, key);
-      const value1 = convertValue(newValue);
-      const value2 = convertValue(oldValue);
+      const valueNew = convertValue(newValue);
+      const valueOld = convertValue(oldValue);
 
       switch (status) {
         case 'bothObjects':
           iter(newValue);
-          return;
-        case 'added':
-          const str = `Property ${path} was added with value: ${value1}`;
+          break;
+        case 'added': {
+          const str = `Property ${path} was added with value: ${valueNew}`;
           arr.push(str);
-          return;
-        case 'deleted':
+          break;
+        }
+        case 'deleted': {
           const str2 = `Property ${path} was deleted`;
           arr.push(str2);
-          return;
-        case 'changed':
-          const str3 = `Property ${path} was changed from ${value2} to ${value1}`;
+          break;
+        }
+        case 'changed': {
+          const str3 = `Property ${path} was changed from ${valueOld} to ${valueNew}`;
           arr.push(str3);
+          break;
+        }
         default:
-          return;
+          break;
       }
     });
   };

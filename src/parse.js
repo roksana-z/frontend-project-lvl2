@@ -11,7 +11,5 @@ export default (file) => {
   } if (ext === '.yml') {
     return yaml.safeLoad(content);
   }
-  if (ext === '.ini') {
-    return ini.parse(content);
-  }
+  return ini.parse(content);
 };

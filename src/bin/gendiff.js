@@ -1,5 +1,5 @@
 import gendiff from 'commander';
-import engine from '../index.js';
+import engine from '../formatters/index.js';
 
 gendiff
   .description('Compares two configuration files and shows a difference.')

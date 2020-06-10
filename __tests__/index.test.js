@@ -77,7 +77,6 @@ ext.forEach((el) => {
 
 test('differentExt', () => {
   expect(() => {
-    gendiff
-  (beforeYaml, afterJSON);
+    gendiff(beforeYaml, afterJSON)
   }).toThrow();
 });

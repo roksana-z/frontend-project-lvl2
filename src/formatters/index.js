@@ -1,9 +1,9 @@
 import path from 'path';
-import parse from './parse.js';
-import formatToTree from './formatters/stylish.js';
-import formatToText from './formatters/plain.js';
-import formatToJson from './formatters/json.js';
-import buildAstTree from './buildAst.js';
+import parse from '../parsers.js';
+import formatToTree from './stylish.js';
+import formatToText from './plain.js';
+import formatToJson from './json.js';
+import buildAstTree from '../buildAst.js';
 
 const applyFormat = (ast, style) => {
   switch (style) {

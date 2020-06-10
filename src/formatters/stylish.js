@@ -37,55 +37,41 @@ export default (ast) => {
       } = el;
 
       if (status === 'bothObjects') {
-        const str = `${whiteSpace.repeat(depth)}${key}: {`;
-        arr.push(str);
+        arr.push(`${whiteSpace.repeat(depth)}${key}: {`);
         iter(newValue, arr);
         arr.push(`${whiteSpaceForCloseBrackets}}`);
       } else if (status === 'added') {
         if (typeof newValue === 'object') {
-          const newArr = objecToString('+', key, newValue, depth);
-          arr.push(newArr);
+          arr.push(objecToString('+', key, newValue, depth));
         } else {
-          const str = `${whiteSpace.repeat(depth)}+ ${key}: ${newValue}`;
-          arr.push(str);
+          arr.push(`${whiteSpace.repeat(depth)}+ ${key}: ${newValue}`);
         }
       } else if (status === 'unchanged') {
         if (typeof newValue === 'object') {
-          const newArr = objecToString(' ', key, newValue, depth);
-          arr.push(newArr);
+          arr.push(objecToString(' ', key, newValue, depth));
         } else {
-          const str = `${whiteSpace.repeat(depth)}  ${key}: ${newValue}`;
-          arr.push(str);
+          arr.push(`${whiteSpace.repeat(depth)}  ${key}: ${newValue}`);
         }
       } else if (status === 'deleted') {
         if (typeof oldValue === 'object') {
-          const newArr = objecToString('-', key, oldValue, depth);
-          arr.push(newArr);
+          arr.push(objecToString('-', key, oldValue, depth));
         } else {
-          const str = `${whiteSpace.repeat(depth)}- ${key}: ${oldValue}`;
-          arr.push(str);
+          arr.push(`${whiteSpace.repeat(depth)}- ${key}: ${oldValue}`);
         }
       } else if (status === 'changed') {
         if (typeof newValue === 'object' && typeof oldValue !== 'object') {
-          const newArr = objecToString('+', key, newValue, depth);
-          arr.push(newArr);
-          const str = `${whiteSpace.repeat(depth)}- ${key}: ${oldValue}`;
-          arr.push(str);
+          arr.push(objecToString('+', key, newValue, depth));
+          arr.push(`${whiteSpace.repeat(depth)}- ${key}: ${oldValue}`);
         } else if (typeof oldValue === 'object' && typeof newValue !== 'object') {
-          const newArr = objecToString('-', key, oldValue, depth);
-          arr.push(newArr);
-          const str = `${whiteSpace.repeat(depth)}+ ${key}: ${newValue}`;
-          arr.push(str);
+          arr.push(objecToString('-', key, oldValue, depth));
+          arr.push(`${whiteSpace.repeat(depth)}+ ${key}: ${newValue}`);
         } else {
-          const newStr = `${whiteSpace.repeat(depth)}+ ${key}: ${newValue}`;
-          arr.push(newStr);
-          const oldStr = `${whiteSpace.repeat(depth)}- ${key}: ${oldValue}`;
-          arr.push(oldStr);
+          arr.push(`${whiteSpace.repeat(depth)}+ ${key}: ${newValue}`);
+          arr.push(`${whiteSpace.repeat(depth)}- ${key}: ${oldValue}`);
         }
       }
     });
   };
   iter(ast, array);
-  const result = `{\n${array.flat().join('\n')}\n}`;
-  return result;
+  return `{\n${array.flat().join('\n')}\n}`;
 };

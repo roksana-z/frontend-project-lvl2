@@ -1,74 +1,79 @@
 import path from 'path';
-import gendiff from '../src/index.js';
+import gendiff from '../src/formatters/index.js';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 const readFile = (filename) => fs.readFileSync(getFixturePath(filename), 'utf-8');
 
-const beforeJSON = getFixturePath('before.json');
-const afterJSON = getFixturePath('after.json');
-const emptyJSON = getFixturePath('empty.json');
+const paths = {
+  before: [],
+  after: [],
+  empty: []
+}
+// const cases = ['before', 'after', 'empty'];
+const ext = ['json', 'yml', 'ini'];
+ext.forEach((el) => {
+  paths.before.push(getFixturePath(`before.${el}`));
+  paths.after.push(getFixturePath(`after.${el}`));
+  paths.empty.push(getFixturePath(`empty.${el}`))
+})
 
-const beforeYaml = getFixturePath('before.yml');
-const afterYaml = getFixturePath('after.yml');
-const emptyYaml = getFixturePath('empty.yml');
+ const results = {
+   simple: [],
+   emptyBefore: [],
+   emptyAfter: []
+ }
 
-const beforeIni = getFixturePath('before.ini');
-const afterIni = getFixturePath('after.ini');
-const emptyIni = getFixturePath('empty.ini');
+ const formats = ['tree', 'plain', 'json'];
+ formats.forEach((el) => {
+   results.simple.push([el, readFile(`${el}Result.txt`)]);
+   results.emptyBefore.push([el, readFile(`${el}EmptyBeforeResult.txt`)]);
+   results.emptyAfter.push([el, readFile(`${el}EmptyAfterResult.txt`)]);
+ })
 
-test('simple', () => {
-  const result = readFile('treeResult.txt');
-  const resultPlainFormat = readFile('resultPlain.txt');
-  const resultJSONFormat = readFile('resultJson.json');
-  expect(gendiff
-  (beforeJSON, afterJSON, 'tree')).toMatch(result.trim());
-  expect(gendiff
-  (beforeYaml, afterYaml, 'tree')).toMatch(result.trim());
-  expect(gendiff
-  (beforeIni, afterIni, 'tree')).toMatch(result.trim());
-  expect(gendiff
-  (beforeJSON, afterJSON, 'plain')).toMatch(resultPlainFormat.trim());
-  expect(gendiff
-  (beforeJSON, afterJSON, 'json')).toMatch(resultJSONFormat.trim());
-});
+  const simpleResult = [];
+  ext.forEach((el) => {
+    const before = paths.before.filter((str) => str.includes(el));
+    const after = paths.after.filter((str) => str.includes(el));
+    results.simple.forEach((result) => simpleResult.push([...before, ...after, result]))
+  })
 
-test('emptyBefore', () => {
-  const result = readFile('emptyBeforeTreeResult.txt');
-  const resultForIni = readFile('emptyBeforeIni.txt');
-  const resultPlain = readFile('emptyBeforePlainResult.txt');
-  const resultJson = readFile('emptyBeforeJsonResult.json');
-  expect(gendiff
-  (emptyJSON, afterJSON, 'tree')).toMatch(result.trim());
-  expect(gendiff
-  (emptyYaml, afterYaml, 'tree')).toMatch(result.trim());
-  expect(gendiff
-  (emptyIni, afterIni, 'tree')).toMatch(resultForIni.trim());
-  expect(gendiff
-  (emptyJSON, afterJSON, 'plain')).toMatch(resultPlain.trim());
-  expect(gendiff
-  (emptyJSON, afterJSON, 'json')).toMatch(resultJson.trim());
-});
+  test.each(simpleResult)('simple', (before, after, expected) => {
+    const format = expected[0];
+    const result = expected[1].trim();
+    expect(gendiff(before, after, format)).toBe(result);
+  });
 
-test('emptyAfter', () => {
-  const result = readFile('emptyAfterTreeResult.txt');
-  const resultPlain = readFile('emptyAfterPlainResult.txt');
-  const resultJson = readFile('emptyAfterJsonResult.json');
-  expect(gendiff
-  (beforeJSON, emptyJSON, 'tree')).toMatch(result.trim());
-  expect(gendiff
-  (beforeYaml, emptyYaml, 'tree')).toMatch(result.trim());
-  expect(gendiff
-  (beforeIni, emptyIni, 'tree')).toMatch(result.trim());
-  expect(gendiff
-  (beforeJSON, emptyJSON, 'plain')).toMatch(resultPlain.trim());
-  expect(gendiff
-  (beforeJSON, emptyJSON, 'json')).toMatch(resultJson.trim());
-});
+  const emptyBeforeResult = [];
+  ext.forEach((el) => {
+    const before = paths.empty.filter((str) => str.includes(el));
+    const after = paths.after.filter((str) => str.includes(el));
+    results.emptyBefore.forEach(result => emptyBeforeResult.push([...before, ...after, result]))
+  })
+
+  test.each(emptyBeforeResult)('emptyBefore', (before, after, expected) => {
+    const format = expected[0];
+    const result = expected[1].trim();
+    expect(gendiff(before, after, format)).toBe(result);
+  });
+
+  const emptyAfterResult = [];
+  ext.forEach(el => {
+    const before = paths.before.filter((str) => str.includes(el));
+    const after = paths.empty.filter((str) => str.includes(el));
+    results.emptyAfter.forEach(result => emptyAfterResult.push([...before, ...after, result]))
+  })
+
+  test.each(emptyAfterResult)('emptyAfter', (before, after, expected) => {
+    const format = expected[0];
+    const result = expected[1].trim();
+    expect(gendiff(before, after, format)).toBe(result);
+  });
 
 test('differentExt', () => {
   expect(() => {

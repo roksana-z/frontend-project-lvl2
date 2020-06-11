@@ -28,6 +28,22 @@ const objecToString = (prefix, key, value, depth) => {
   return arr;
 };
 
+const prepareData = (sign, curKey, newKey, lvl) => {
+  if (typeof newKey === 'object') {
+    return objecToString(sign, curKey, newKey, lvl);
+  };
+  switch (sign) {
+    case '+':
+      return `${whiteSpace.repeat(lvl)}+ ${curKey}: ${newKey}`;
+    case ' ':
+      return `${whiteSpace.repeat(lvl)}  ${curKey}: ${newKey}`;
+    case '-':
+      return `${whiteSpace.repeat(lvl)}- ${curKey}: ${newKey}`;
+    default:
+      break;
+  }
+};
+
 export default (ast) => {
   const array = [];
   const iter = (tree, arr) => {
@@ -41,33 +57,21 @@ export default (ast) => {
         iter(newValue, arr);
         arr.push(`${whiteSpaceForCloseBrackets}}`);
       } else if (status === 'added') {
-        if (typeof newValue === 'object') {
-          arr.push(objecToString('+', key, newValue, depth));
-        } else {
-          arr.push(`${whiteSpace.repeat(depth)}+ ${key}: ${newValue}`);
-        }
+        arr.push(prepareData('+', key, newValue, depth));
       } else if (status === 'unchanged') {
-        if (typeof newValue === 'object') {
-          arr.push(objecToString(' ', key, newValue, depth));
-        } else {
-          arr.push(`${whiteSpace.repeat(depth)}  ${key}: ${newValue}`);
-        }
+        arr.push(prepareData(' ', key, newValue, depth));
       } else if (status === 'deleted') {
-        if (typeof oldValue === 'object') {
-          arr.push(objecToString('-', key, oldValue, depth));
-        } else {
-          arr.push(`${whiteSpace.repeat(depth)}- ${key}: ${oldValue}`);
-        }
+        arr.push(prepareData('-', key, oldValue, depth));
       } else if (status === 'changed') {
         if (typeof newValue === 'object' && typeof oldValue !== 'object') {
-          arr.push(objecToString('+', key, newValue, depth));
-          arr.push(`${whiteSpace.repeat(depth)}- ${key}: ${oldValue}`);
+          arr.push(prepareData('+', key, newValue, depth));
+          arr.push(prepareData('-', key, oldValue, depth));
         } else if (typeof oldValue === 'object' && typeof newValue !== 'object') {
-          arr.push(objecToString('-', key, oldValue, depth));
-          arr.push(`${whiteSpace.repeat(depth)}+ ${key}: ${newValue}`);
+          arr.push(prepareData('-', key, oldValue, depth));
+          arr.push(prepareData('+', key, newValue, depth));
         } else {
-          arr.push(`${whiteSpace.repeat(depth)}+ ${key}: ${newValue}`);
-          arr.push(`${whiteSpace.repeat(depth)}- ${key}: ${oldValue}`);
+          arr.push(prepareData('+', key, newValue, depth));
+          arr.push(prepareData('-', key, oldValue, depth));
         }
       }
     });

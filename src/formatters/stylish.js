@@ -28,20 +28,11 @@ const objecToString = (prefix, key, value, depth) => {
   return arr;
 };
 
-const prepareData = (sign, curKey, newKey, lvl) => {
-  if (typeof newKey === 'object') {
-    return objecToString(sign, curKey, newKey, lvl);
-  };
-  switch (sign) {
-    case '+':
-      return `${whiteSpace.repeat(lvl)}+ ${curKey}: ${newKey}`;
-    case ' ':
-      return `${whiteSpace.repeat(lvl)}  ${curKey}: ${newKey}`;
-    case '-':
-      return `${whiteSpace.repeat(lvl)}- ${curKey}: ${newKey}`;
-    default:
-      break;
+const prepareData = (sign, key, value, lvl) => {
+  if (typeof value === 'object') {
+    return objecToString(sign, key, value, lvl);
   }
+  return `${whiteSpace.repeat(lvl)}${sign} ${key}: ${value}`;
 };
 
 export default (ast) => {
@@ -63,16 +54,8 @@ export default (ast) => {
       } else if (status === 'deleted') {
         arr.push(prepareData('-', key, oldValue, depth));
       } else if (status === 'changed') {
-        if (typeof newValue === 'object' && typeof oldValue !== 'object') {
-          arr.push(prepareData('+', key, newValue, depth));
-          arr.push(prepareData('-', key, oldValue, depth));
-        } else if (typeof oldValue === 'object' && typeof newValue !== 'object') {
-          arr.push(prepareData('-', key, oldValue, depth));
-          arr.push(prepareData('+', key, newValue, depth));
-        } else {
-          arr.push(prepareData('+', key, newValue, depth));
-          arr.push(prepareData('-', key, oldValue, depth));
-        }
+        arr.push(prepareData('+', key, newValue, depth));
+        arr.push(prepareData('-', key, oldValue, depth));
       }
     });
   };

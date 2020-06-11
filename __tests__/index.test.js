@@ -4,79 +4,90 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 
-
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 const readFile = (filename) => fs.readFileSync(getFixturePath(filename), 'utf-8');
 
-const paths = {
-  before: [],
-  after: [],
-  empty: []
-}
-// const cases = ['before', 'after', 'empty'];
-const ext = ['json', 'yml', 'ini'];
-ext.forEach((el) => {
-  paths.before.push(getFixturePath(`before.${el}`));
-  paths.after.push(getFixturePath(`after.${el}`));
-  paths.empty.push(getFixturePath(`empty.${el}`))
-})
+const beforeJSON = getFixturePath('before.json');
+const afterJSON = getFixturePath('after.json');
+const emptyJSON = getFixturePath('empty.json');
 
- const results = {
-   simple: [],
-   emptyBefore: [],
-   emptyAfter: []
- }
+const beforeYaml = getFixturePath('before.yml');
+const afterYaml = getFixturePath('after.yml');
+const emptyYaml = getFixturePath('empty.yml');
 
- const formats = ['tree', 'plain', 'json'];
- formats.forEach((el) => {
-   results.simple.push([el, readFile(`${el}Result.txt`)]);
-   results.emptyBefore.push([el, readFile(`${el}EmptyBeforeResult.txt`)]);
-   results.emptyAfter.push([el, readFile(`${el}EmptyAfterResult.txt`)]);
- })
+const beforeIni = getFixturePath('before.ini');
+const afterIni = getFixturePath('after.ini');
+const emptyIni = getFixturePath('empty.ini');
 
-  const simpleResult = [];
-  ext.forEach((el) => {
-    const before = paths.before.filter((str) => str.includes(el));
-    const after = paths.after.filter((str) => str.includes(el));
-    results.simple.forEach((result) => simpleResult.push([...before, ...after, result]))
-  })
+test('simple', () => {
+  // Arrange
+  const result = readFile('treeResult.txt');
+  const resultPlainFormat = readFile('plainResult.txt');
+  const resultJSONFormat = readFile('jsonResult.txt');
 
-  test.each(simpleResult)('simple', (before, after, expected) => {
-    const format = expected[0];
-    const result = expected[1].trim();
-    expect(gendiff(before, after, format)).toBe(result);
-  });
+  // Act
+  const jsonStylish = gendiff(beforeJSON, afterJSON, 'stylish');
+  const yamlStylish = gendiff(beforeYaml, afterYaml, 'stylish');
+  const iniStylish = gendiff(beforeIni, afterIni, 'stylish');
+  const plain = gendiff(beforeJSON, afterJSON, 'plain');
+  const json = gendiff(beforeJSON, afterJSON, 'json');
 
-  const emptyBeforeResult = [];
-  ext.forEach((el) => {
-    const before = paths.empty.filter((str) => str.includes(el));
-    const after = paths.after.filter((str) => str.includes(el));
-    results.emptyBefore.forEach(result => emptyBeforeResult.push([...before, ...after, result]))
-  })
+  // Assert
+  expect(jsonStylish).toMatch(result.trim());
+  expect(yamlStylish).toMatch(result.trim());
+  expect(iniStylish).toMatch(result.trim());
+  expect(plain).toMatch(resultPlainFormat.trim());
+  expect(json).toMatch(resultJSONFormat.trim());
+});
 
-  test.each(emptyBeforeResult)('emptyBefore', (before, after, expected) => {
-    const format = expected[0];
-    const result = expected[1].trim();
-    expect(gendiff(before, after, format)).toBe(result);
-  });
+test('emptyBefore', () => {
+  // Arrange
+  const result = readFile('treeEmptyBeforeResult.txt');
+  const resultForIni = readFile('emptyBeforeIni.txt');
+  const resultPlain = readFile('plainEmptyBeforeResult.txt');
+  const resultJson = readFile('jsonEmptyBeforeResult.txt');
 
-  const emptyAfterResult = [];
-  ext.forEach(el => {
-    const before = paths.before.filter((str) => str.includes(el));
-    const after = paths.empty.filter((str) => str.includes(el));
-    results.emptyAfter.forEach(result => emptyAfterResult.push([...before, ...after, result]))
-  })
+  // Act
+  const jsonStylish  = gendiff(emptyJSON, afterJSON, 'stylish');
+  const yamlStylish = gendiff(emptyYaml, afterYaml, 'stylish')
+  const iniStylish = gendiff(emptyIni, afterIni, 'stylish');
+  const plain = gendiff(emptyJSON, afterJSON, 'plain');
+  const json = gendiff(emptyJSON, afterJSON, 'json');
 
-  test.each(emptyAfterResult)('emptyAfter', (before, after, expected) => {
-    const format = expected[0];
-    const result = expected[1].trim();
-    expect(gendiff(before, after, format)).toBe(result);
-  });
+  // Assert
+  expect(jsonStylish).toMatch(result.trim());
+  expect(yamlStylish).toMatch(result.trim());
+  expect(iniStylish).toMatch(resultForIni.trim());
+  expect(plain).toMatch(resultPlain.trim());
+  expect(json).toMatch(resultJson.trim());
+});
+
+test('emptyAfter', () => {
+  // Arrange
+  const result = readFile('treeEmptyAfterResult.txt');
+  const resultPlain = readFile('plainEmptyAfterResult.txt');
+  const resultJson = readFile('jsonEmptyAfterResult.txt');
+
+  // Act
+  const jsonStylish = gendiff(beforeJSON, emptyJSON, 'stylish');
+  const yamlStylish = gendiff(beforeYaml, emptyYaml, 'stylish');
+  const iniStylish =gendiff(beforeIni, emptyIni, 'stylish');
+  const plain = gendiff(beforeJSON, emptyJSON, 'plain');
+  const json = gendiff(beforeJSON, emptyJSON, 'json');
+
+  // Assert
+  expect(jsonStylish).toMatch(result.trim());
+  expect(yamlStylish).toMatch(result.trim());
+  expect(iniStylish).toMatch(result.trim());
+  expect(plain).toMatch(resultPlain.trim());
+  expect(json).toMatch(resultJson.trim());
+});
 
 test('differentExt', () => {
   expect(() => {
-    gendiff(beforeYaml, afterJSON)
+    gendiff
+  (beforeYaml, afterJSON);
   }).toThrow();
 });

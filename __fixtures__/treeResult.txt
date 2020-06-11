@@ -20,10 +20,10 @@
     + baz: bars
     - baz: bas
       foo: bar
+    + nest: str
     - nest: {
         key: value
     }
-    + nest: str
   }
   - group2: {
       abc: 12345

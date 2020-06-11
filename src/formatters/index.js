@@ -7,7 +7,7 @@ import buildAstTree from '../buildAst.js';
 
 const applyFormat = (ast, style) => {
   switch (style) {
-    case 'tree':
+    case 'stylish':
       return formatToTree(ast);
     case 'plain':
       return formatToText(ast);

@@ -44,38 +44,41 @@ const prepareData = (sign, curKey, newKey, lvl) => {
   }
 };
 
-export default (ast) => {
-  const array = [];
-  const iter = (tree, arr) => {
-    tree.forEach((el) => {
-      const {
-        key, status, depth, newValue, oldValue,
-      } = el;
+// export default (ast) => {
+//   const array = [];
+const iter = (tree, arr = []) => {
+  tree.forEach((el) => {
+    const {
+      key, status, depth, newValue, oldValue,
+    } = el;
 
-      if (status === 'bothObjects') {
-        arr.push(`${whiteSpace.repeat(depth)}${key}: {`);
-        iter(newValue, arr);
-        arr.push(`${whiteSpaceForCloseBrackets}}`);
-      } else if (status === 'added') {
+    if (status === 'bothObjects') {
+      arr.push(`${whiteSpace.repeat(depth)}${key}: {`);
+      iter(newValue, arr);
+      arr.push(`${whiteSpaceForCloseBrackets}}`);
+    } else if (status === 'added') {
+      arr.push(prepareData('+', key, newValue, depth));
+    } else if (status === 'unchanged') {
+      arr.push(prepareData(' ', key, newValue, depth));
+    } else if (status === 'deleted') {
+      arr.push(prepareData('-', key, oldValue, depth));
+    } else if (status === 'changed') {
+      if (typeof newValue === 'object' && typeof oldValue !== 'object') {
         arr.push(prepareData('+', key, newValue, depth));
-      } else if (status === 'unchanged') {
-        arr.push(prepareData(' ', key, newValue, depth));
-      } else if (status === 'deleted') {
         arr.push(prepareData('-', key, oldValue, depth));
-      } else if (status === 'changed') {
-        if (typeof newValue === 'object' && typeof oldValue !== 'object') {
-          arr.push(prepareData('+', key, newValue, depth));
-          arr.push(prepareData('-', key, oldValue, depth));
-        } else if (typeof oldValue === 'object' && typeof newValue !== 'object') {
-          arr.push(prepareData('-', key, oldValue, depth));
-          arr.push(prepareData('+', key, newValue, depth));
-        } else {
-          arr.push(prepareData('+', key, newValue, depth));
-          arr.push(prepareData('-', key, oldValue, depth));
-        }
+      } else if (typeof oldValue === 'object' && typeof newValue !== 'object') {
+        arr.push(prepareData('-', key, oldValue, depth));
+        arr.push(prepareData('+', key, newValue, depth));
+      } else {
+        arr.push(prepareData('+', key, newValue, depth));
+        arr.push(prepareData('-', key, oldValue, depth));
       }
-    });
-  };
-  iter(ast, array);
-  return `{\n${array.flat().join('\n')}\n}`;
+    }
+  });
+  return `{\n${arr.flat().join('\n')}\n}`;
 };
+
+export default iter;
+  // iter(ast, array);
+  // return `{\n${array.flat().join('\n')}\n}`;
+// };

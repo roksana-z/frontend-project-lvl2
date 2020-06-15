@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import gendiff from 'commander';
-import engine from '../formatters/index.js';
+import genDiff from '../index.js';
 
 gendiff
   .description('Compares two configuration files and shows a difference.')
@@ -8,9 +8,7 @@ gendiff
   .arguments('<file1Path> <file2Path>')
   .option('-f, --format [type]', 'output format [type]', 'stylish')
   .action((file1Path, file2Path) => {
-    const file1 = file1Path;
-    const file2 = file2Path;
-    console.log(engine(file1, file2, gendiff.format));
+    console.log(genDiff(file1Path, file2Path, gendiff.format));
   });
 
 gendiff.parse(process.argv);

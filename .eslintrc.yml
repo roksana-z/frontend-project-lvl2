@@ -9,4 +9,3 @@ env:
 rules:
   no-console: 0
   import/extensions: 0 # FIXME: remove when rule will be adjusted for new nodejs version
-  import/no-named-as-default: 0

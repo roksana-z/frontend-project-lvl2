@@ -27,18 +27,15 @@ export default (ast) => {
           iter(newValue);
           break;
         case 'added': {
-          const str = `Property ${path} was added with value: ${valueNew}`;
-          arr.push(str);
+          arr.push(`Property ${path} was added with value: ${valueNew}`);
           break;
         }
         case 'deleted': {
-          const str2 = `Property ${path} was deleted`;
-          arr.push(str2);
+          arr.push(`Property ${path} was deleted`);
           break;
         }
         case 'changed': {
-          const str3 = `Property ${path} was changed from ${valueOld} to ${valueNew}`;
-          arr.push(str3);
+          arr.push(`Property ${path} was changed from ${valueOld} to ${valueNew}`);
           break;
         }
         default:

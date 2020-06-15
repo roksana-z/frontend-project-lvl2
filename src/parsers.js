@@ -1,15 +1,25 @@
-import path from 'path';
 import yaml from 'js-yaml';
 import ini from 'ini';
-import fs from 'fs';
+import _ from 'lodash';
 
-export default (file) => {
-  const ext = path.extname(path.basename(file));
-  const content = fs.readFileSync(file, 'utf-8');
+const transformNumbers = (content) => {
+  const copyContent = _.cloneDeep(content);
+  const keys = Object.keys(copyContent);
+  keys.forEach((key) => {
+    if (typeof copyContent[key] === 'object') {
+      copyContent[key] = transformNumbers(copyContent[key]);
+    } if (Number.parseInt(copyContent[key], 10)) {
+      copyContent[key] = Number.parseInt(copyContent[key], 10);
+    }
+  });
+  return copyContent;
+};
+
+export default (fileContent, ext) => {
   if (ext === '.json') {
-    return JSON.parse(content);
+    return JSON.parse(fileContent);
   } if (ext === '.yml') {
-    return yaml.safeLoad(content);
+    return yaml.safeLoad(fileContent);
   }
-  return ini.parse(content);
+  return transformNumbers(ini.parse(fileContent));
 };

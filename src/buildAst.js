@@ -1,41 +1,39 @@
 
 import _ from 'lodash';
 
-const makeState = (objBefore, objAfter, key, depth, parents) => {
-  if (typeof objBefore[key] === 'object' && typeof objAfter[key] === 'object') {
+const makeState = (objBefore, objAfter, key) => {
+  if (!_.has(objBefore, key)) {
     return {
-      key, status: 'bothObjects', depth, parents,
-    };
-  } if (!_.has(objBefore, key)) {
-    return {
-      key, status: 'added', depth, parents, newValue: objAfter[key],
+      key, status: 'added', newValue: objAfter[key],
     };
   } if (!_.has(objAfter, key)) {
     return {
-      key, status: 'deleted', depth, parents, oldValue: objBefore[key],
+      key, status: 'deleted', oldValue: objBefore[key],
+    };
+  } if (typeof objBefore[key] === 'object' && typeof objAfter[key] === 'object') {
+    return {
+      key, status: 'bothObjects',
     };
   } if (objBefore[key] === objAfter[key]) {
     return {
-      key, status: 'unchanged', depth, parents, newValue: objAfter[key],
+      key, status: 'unchanged', newValue: objAfter[key],
     };
   }
   return {
-    key, status: 'changed', depth, parents, oldValue: objBefore[key], newValue: objAfter[key],
+    key, status: 'changed', oldValue: objBefore[key], newValue: objAfter[key],
   };
 };
 
-const buildAstTree = (nodeBefore, nodeAfter, depth = 1, parents = []) => {
+const buildAstTree = (nodeBefore, nodeAfter) => {
   const beforeKeys = Object.keys(nodeBefore);
   const afterKeys = Object.keys(nodeAfter);
 
   const unitedKeys = _.union(beforeKeys, afterKeys);
   const result = unitedKeys.map((key) => {
-    const data = makeState(nodeBefore, nodeAfter, key, depth, parents);
+    const data = makeState(nodeBefore, nodeAfter, key);
 
     if (data.status === 'bothObjects') {
-      const newDepth = depth + 1;
-      const newParents = [...parents, key];
-      const value = buildAstTree(nodeBefore[key], nodeAfter[key], newDepth, newParents);
+      const value = buildAstTree(nodeBefore[key], nodeAfter[key]);
       return { ...data, newValue: value };
     }
     return data;

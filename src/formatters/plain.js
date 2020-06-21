@@ -13,10 +13,10 @@ const convertValue = (val) => {
 
 export default (ast) => {
   const arr = [];
-  const iter = (tree) => {
+  const iter = (tree, parents) => {
     tree.forEach((el) => {
       const {
-        key, status, parents, newValue, oldValue,
+        key, status, newValue, oldValue,
       } = el;
       const path = makePath(parents, key);
       const valueNew = convertValue(newValue);
@@ -24,7 +24,7 @@ export default (ast) => {
 
       switch (status) {
         case 'bothObjects':
-          iter(newValue);
+          iter(newValue, [...parents, key]);
           break;
         case 'added': {
           arr.push(`Property ${path} was added with value: ${valueNew}`);
@@ -43,6 +43,6 @@ export default (ast) => {
       }
     });
   };
-  iter(ast);
+  iter(ast, []);
   return arr.join('\n');
 };

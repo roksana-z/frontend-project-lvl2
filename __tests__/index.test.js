@@ -27,10 +27,3 @@ results.forEach((result) => {
 test.each(preparedData)('%s %s', (before, after, result) => {
   expect(gendiff(before, after, result.format)).toMatch(result.content.trim());
 })
-
-test('differentExt', () => {
-  expect(() => {
-    gendiff
-  (beforeYaml, afterJSON);
-  }).toThrow();
-});

@@ -37,15 +37,15 @@ const prepareData = (sign, key, value, lvl) => {
 
 export default (ast) => {
   const array = [];
-  const iter = (tree, arr) => {
+  const iter = (tree, arr, depth) => {
     tree.forEach((el) => {
       const {
-        key, status, depth, newValue, oldValue,
+        key, status, newValue, oldValue,
       } = el;
 
       if (status === 'bothObjects') {
         arr.push(`${whiteSpace.repeat(depth)}${key}: {`);
-        iter(newValue, arr);
+        iter(newValue, arr, depth + 1);
         arr.push(`${whiteSpace.repeat(depth)}}`);
       } else if (status === 'added') {
         arr.push(prepareData('+', key, newValue, depth));
@@ -59,6 +59,6 @@ export default (ast) => {
       }
     });
   };
-  iter(ast, array);
+  iter(ast, array, 1);
   return `{\n${array.flat().join('\n')}\n}`;
 };

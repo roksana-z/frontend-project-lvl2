@@ -15,11 +15,13 @@ const transformNumbers = (content) => {
   return copyContent;
 };
 
-export default (fileContent, ext) => {
-  if (ext === '.json') {
-    return JSON.parse(fileContent);
-  } if (ext === '.yml') {
-    return yaml.safeLoad(fileContent);
+export default (data, type) => {
+  if (type === '.json') {
+    return JSON.parse(data);
+  } if (type === '.yml') {
+    return yaml.safeLoad(data);
+  } if (type === '.ini') {
+    return transformNumbers(ini.parse(data));
   }
-  return transformNumbers(ini.parse(fileContent));
+  throw new Error(`Unknown extension: '${type}'!`);
 };

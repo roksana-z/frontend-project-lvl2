@@ -1,6 +1,8 @@
+import _ from 'lodash';
+
 const makePath = (prevKeys, curKey) => {
   const path = [...prevKeys, curKey];
-  return `'${path.join('.')}'`;
+  return path.join('.');
 };
 
 const convertValue = (val) => {
@@ -12,7 +14,8 @@ const convertValue = (val) => {
 };
 
 export default (ast) => {
-  const arr = [];
+  const astCopy = _.cloneDeep(ast);
+  const result = [];
   const iter = (tree, parents) => {
     tree.forEach((el) => {
       const {
@@ -27,15 +30,15 @@ export default (ast) => {
           iter(newValue, [...parents, key]);
           break;
         case 'added': {
-          arr.push(`Property ${path} was added with value: ${valueNew}`);
+          result.push(`Property '${path}' was added with value: ${valueNew}`);
           break;
         }
         case 'deleted': {
-          arr.push(`Property ${path} was deleted`);
+          result.push(`Property '${path}' was deleted`);
           break;
         }
         case 'changed': {
-          arr.push(`Property ${path} was changed from ${valueOld} to ${valueNew}`);
+          result.push(`Property '${path}' was changed from ${valueOld} to ${valueNew}`);
           break;
         }
         default:
@@ -43,6 +46,6 @@ export default (ast) => {
       }
     });
   };
-  iter(ast, []);
-  return arr.join('\n');
+  iter(astCopy, []);
+  return result.join('\n');
 };

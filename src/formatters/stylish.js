@@ -1,31 +1,33 @@
+import _ from 'lodash';
+
 const whiteSpace = '    ';
 const halfSpace = '  ';
 
 const objecToString = (prefix, key, value, depth) => {
-  const arr = [];
+  const result = [];
 
-  const iter = (prefix2, key2, obj2, depth2) => {
-    const firstPart = `${whiteSpace.repeat(depth2 - 1)}${halfSpace}${prefix} ${key2}: {`;
-    arr.push(firstPart);
+  const iter = (sign, keyName, val, lvl) => {
+    const firstPart = `${whiteSpace.repeat(lvl - 1)}${halfSpace}${sign} ${keyName}: {`;
+    result.push(firstPart);
 
-    const keys = Object.keys(obj2);
+    const keys = Object.keys(val);
     keys.forEach((forKey) => {
-      if (typeof obj2[forKey] === 'object') {
-        const newDepth = depth2 + 1;
-        iter(' ', forKey, obj2[forKey], newDepth);
+      if (typeof val[forKey] === 'object') {
+        const newLvl = lvl + 1;
+        iter(' ', forKey, val[forKey], newLvl);
       } else {
-        const str = `${whiteSpace.repeat(depth2 + 1)}${forKey}: ${obj2[forKey]}`;
-        arr.push(str);
+        const str = `${whiteSpace.repeat(lvl + 1)}${forKey}: ${val[forKey]}`;
+        result.push(str);
       }
     });
 
-    const secondPart = `${whiteSpace.repeat(depth2)}}`;
-    arr.push(secondPart);
+    const secondPart = `${whiteSpace.repeat(lvl)}}`;
+    result.push(secondPart);
   };
 
   iter(prefix, key, value, depth);
 
-  return arr;
+  return result;
 };
 
 const prepareData = (sign, key, value, lvl) => {
@@ -36,29 +38,30 @@ const prepareData = (sign, key, value, lvl) => {
 };
 
 export default (ast) => {
-  const array = [];
-  const iter = (tree, arr, depth) => {
+  const astCopy = _.cloneDeep(ast);
+  const result = [];
+  const iter = (tree, depth) => {
     tree.forEach((el) => {
       const {
         key, status, newValue, oldValue,
       } = el;
 
       if (status === 'bothObjects') {
-        arr.push(`${whiteSpace.repeat(depth)}${key}: {`);
-        iter(newValue, arr, depth + 1);
-        arr.push(`${whiteSpace.repeat(depth)}}`);
+        result.push(`${whiteSpace.repeat(depth)}${key}: {`);
+        iter(newValue, depth + 1);
+        result.push(`${whiteSpace.repeat(depth)}}`);
       } else if (status === 'added') {
-        arr.push(prepareData('+', key, newValue, depth));
+        result.push(prepareData('+', key, newValue, depth));
       } else if (status === 'unchanged') {
-        arr.push(prepareData(' ', key, newValue, depth));
+        result.push(prepareData(' ', key, newValue, depth));
       } else if (status === 'deleted') {
-        arr.push(prepareData('-', key, oldValue, depth));
+        result.push(prepareData('-', key, oldValue, depth));
       } else if (status === 'changed') {
-        arr.push(prepareData('+', key, newValue, depth));
-        arr.push(prepareData('-', key, oldValue, depth));
+        result.push(prepareData('+', key, newValue, depth));
+        result.push(prepareData('-', key, oldValue, depth));
       }
     });
   };
-  iter(ast, array, 1);
-  return `{\n${array.flat().join('\n')}\n}`;
+  iter(astCopy, 1);
+  return `{\n${result.flat().join('\n')}\n}`;
 };

@@ -16,11 +16,11 @@ const transformNumbers = (content) => {
 };
 
 export default (data, type) => {
-  if (type === '.json') {
+  if (type === 'json') {
     return JSON.parse(data);
-  } if (type === '.yml') {
+  } if (type === 'yml') {
     return yaml.safeLoad(data);
-  } if (type === '.ini') {
+  } if (type === 'ini') {
     return transformNumbers(ini.parse(data));
   }
   throw new Error(`Unknown extension: '${type}'!`);

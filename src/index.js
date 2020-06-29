@@ -12,12 +12,12 @@ const resolvePath = (filePath) => {
 
 export default (file1Path, file2Path, format) => {
   const resolvedPath1 = resolvePath(file1Path);
-  const extFile1 = path.extname(path.basename(resolvedPath1));
+  const extFile1 = path.extname(path.basename(resolvedPath1)).slice(1);
   const contentFile1 = fs.readFileSync(resolvedPath1, 'utf-8');
   const parsedFile1 = parse(contentFile1, extFile1);
 
   const resolvedPath2 = resolvePath(file2Path);
-  const extFile2 = path.extname(path.basename(resolvedPath2));
+  const extFile2 = path.extname(path.basename(resolvedPath2)).slice(1);
   const contentFile2 = fs.readFileSync(resolvedPath2, 'utf-8');
   const parsedFile2 = parse(contentFile2, extFile2);
 

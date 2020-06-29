@@ -1,43 +1,36 @@
 
 import _ from 'lodash';
 
-const makeState = (objBefore, objAfter, key) => {
-  if (!_.has(objBefore, key)) {
-    return {
-      key, status: 'added', newValue: objAfter[key],
-    };
-  } if (!_.has(objAfter, key)) {
-    return {
-      key, status: 'deleted', oldValue: objBefore[key],
-    };
-  } if (typeof objBefore[key] === 'object' && typeof objAfter[key] === 'object') {
-    return {
-      key, status: 'bothObjects',
-    };
-  } if (objBefore[key] === objAfter[key]) {
-    return {
-      key, status: 'unchanged', newValue: objAfter[key],
-    };
-  }
-  return {
-    key, status: 'changed', oldValue: objBefore[key], newValue: objAfter[key],
-  };
-};
-
 const buildAstTree = (nodeBefore, nodeAfter) => {
   const beforeKeys = Object.keys(nodeBefore);
   const afterKeys = Object.keys(nodeAfter);
 
   const unitedKeys = _.union(beforeKeys, afterKeys);
-  const result = unitedKeys.map((key) => {
-    const data = makeState(nodeBefore, nodeAfter, key);
 
-    if (data.status === 'bothObjects') {
+  const result = unitedKeys.map((key) => {
+    if (!_.has(nodeBefore, key)) {
+      return {
+        key, status: 'added', newValue: nodeAfter[key],
+      };
+    } if (!_.has(nodeAfter, key)) {
+      return {
+        key, status: 'deleted', oldValue: nodeBefore[key],
+      };
+    } if (typeof nodeBefore[key] === 'object' && typeof nodeAfter[key] === 'object') {
       const value = buildAstTree(nodeBefore[key], nodeAfter[key]);
-      return { ...data, newValue: value };
+      return {
+        key, status: 'bothObjects', newValue: value,
+      };
+    } if (nodeBefore[key] === nodeAfter[key]) {
+      return {
+        key, status: 'unchanged', newValue: nodeAfter[key],
+      };
     }
-    return data;
+    return {
+      key, status: 'changed', oldValue: nodeBefore[key], newValue: nodeAfter[key],
+    };
   });
+
   return result;
 };
 

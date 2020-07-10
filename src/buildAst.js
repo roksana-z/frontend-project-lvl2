@@ -17,9 +17,9 @@ const buildAstTree = (nodeBefore, nodeAfter) => {
         key, status: 'deleted', oldValue: nodeBefore[key],
       };
     } if (typeof nodeBefore[key] === 'object' && typeof nodeAfter[key] === 'object') {
-      const value = buildAstTree(nodeBefore[key], nodeAfter[key]);
+      const children = buildAstTree(nodeBefore[key], nodeAfter[key]);
       return {
-        key, status: 'bothObjects', newValue: value,
+        key, status: 'bothObjects', newValue: children,
       };
     } if (nodeBefore[key] === nodeAfter[key]) {
       return {

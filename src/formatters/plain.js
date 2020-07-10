@@ -1,4 +1,3 @@
-import _ from 'lodash';
 
 const makePath = (prevKeys, curKey) => {
   const path = [...prevKeys, curKey];
@@ -13,39 +12,29 @@ const convertValue = (val) => {
   } return val;
 };
 
-export default (ast) => {
-  const astCopy = _.cloneDeep(ast);
-  const result = [];
-  const iter = (tree, parents) => {
-    tree.forEach((el) => {
-      const {
-        key, status, newValue, oldValue,
-      } = el;
-      const path = makePath(parents, key);
-      const valueNew = convertValue(newValue);
-      const valueOld = convertValue(oldValue);
+const iter = (tree, parents = []) => {
+  const result = tree.filter((el) => el.status !== 'unchanged').map((el) => {
+    const {
+      key, status, newValue, oldValue,
+    } = el;
+    const path = makePath(parents, key);
+    const valueNew = convertValue(newValue);
+    const valueOld = convertValue(oldValue);
 
-      switch (status) {
-        case 'bothObjects':
-          iter(newValue, [...parents, key]);
-          break;
-        case 'added': {
-          result.push(`Property '${path}' was added with value: ${valueNew}`);
-          break;
-        }
-        case 'deleted': {
-          result.push(`Property '${path}' was deleted`);
-          break;
-        }
-        case 'changed': {
-          result.push(`Property '${path}' was changed from ${valueOld} to ${valueNew}`);
-          break;
-        }
-        default:
-          break;
-      }
-    });
-  };
-  iter(astCopy, []);
-  return result.join('\n');
+    switch (status) {
+      case 'bothObjects':
+        return iter(newValue, [...parents, key]);
+      case 'added':
+        return (`Property '${path}' was added with value: ${valueNew}`);
+      case 'deleted':
+        return (`Property '${path}' was deleted`);
+      case 'changed':
+        return (`Property '${path}' was changed from ${valueOld} to ${valueNew}`);
+      default:
+        throw new Error(`Unknown status: '${status}'!`);
+    }
+  });
+  return result.filter((el) => el !== undefined).join('\n');
 };
+
+export default iter;

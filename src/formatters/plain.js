@@ -34,7 +34,7 @@ const iter = (tree, parents = []) => {
         throw new Error(`Unknown status: '${status}'!`);
     }
   });
-  return result.filter((el) => el !== undefined).join('\n');
+  return result.join('\n');
 };
 
 export default iter;

@@ -1,3 +1,9 @@
+This utility shows different between two config files.
+Utility features:
+
+    Support for different formats
+    Generating a report in plain text, stylish and json
+
 <a href="https://codeclimate.com/github/roksana-z/frontend-project-lvl2/maintainability"><img src="https://api.codeclimate.com/v1/badges/cb68d9b2888d80d2875d/maintainability" /></a>
 <a href="https://codeclimate.com/github/roksana-z/frontend-project-lvl2/test_coverage"><img src="https://api.codeclimate.com/v1/badges/cb68d9b2888d80d2875d/test_coverage" /></a>
 ![CI](https://github.com/roksana-z/frontend-project-lvl2/workflows/CI/badge.svg)
